@@ -26,4 +26,22 @@ RSpec.describe "Movie Show Page" do
     visit "/movies/#{@movie_1.id}"
     expect(page).to have_content("Average Actor Age: 22.5")
   end
+
+  it "displays a form for an actors name, but when filled with an existing actor's name it's redirected back to that movie's show page where the actor's name is listed" do
+    visit "/movies/#{@movie_1.id}"
+    expect(page).to have_content(@actor_1.name)
+    fill_in :name, with: @actor_1.name
+    click_on "Submit"
+    expect(current_path).to eq("/movies/#{@movie_1.id}")
+    expect(page).to have_content("Actor already exists")
+    expect(page).to have_content(@actor_1.name)
+  end
+
+  it "cannot create a new actor without all information" do
+    visit "/movies/#{@movie_1.id}"
+    fill_in :name, with: @actor_1.name
+    click_on "Submit"
+    expect(current_path).to eq("/movies/#{@movie_1.id}")
+    expect(page).to have_content("")
+  end
 end
